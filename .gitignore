@@ -1,0 +1,4 @@
+package-lock.json
+.parcel-cahe/
+node_modules/
+dist/
