@@ -31,8 +31,10 @@ var abajo;
 const velocidadAuto = 500;
 
 function preload(){
-  this.load.path = "assets/sprites/";  
-  this.load.image("auto","assets/sprites/auto.png");
+  const imageUrl = new URL("./assets/sprites/auto.png", import.meta.url);
+
+  //this.load.path = "assets/sprites/";  
+  this.load.image("auto",imageUrl.pathname);
 
 }
 
