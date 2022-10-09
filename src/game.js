@@ -18,7 +18,9 @@ var config = {
     create: create,
     update: update,
     extend: {
-      generarAsteroides: generarAsteroides
+      generarAsteroides: generarAsteroides,
+      colicionAutoAsteroide: colicionAutoAsteroide,
+      actualizartexto: actualizartexto
     }
   }]
 }
@@ -31,12 +33,15 @@ var izquierda;
 var arriba;
 var abajo;
 var asteroides;
+var texto;
 
 const velocidadAuto = 500;
 const minAteroides = 2;
 const maxAsteroides = 4;
 const velocidadCaida = 5;
 const tiempoAparicion = 600;
+const vidaAuto = 4;
+const municionInicial = 100;
 
 function preload(){
 
@@ -50,6 +55,14 @@ function preload(){
 function create(){
   
   auto = this.physics.add.sprite(game.config.width /2, game.config.height - 100, 'auto');
+  auto.vida = vidaAuto;
+  auto.municion = municionInicial;
+
+  texto = this.add.text(10,10,'', {
+    fontSize: '20px',
+    fill: '#ffffff'
+  }).setDepth(0,1);
+  this.actualizartexto();
 
   asteroides = this.physics.add.group({
     defaultKey:'asteroides',
@@ -64,6 +77,8 @@ function create(){
       this.generarAsteroides()
     }
   });
+
+  this.physics.add.overlap(auto, asteroides, this.colicionAutoAsteroide, null,this);
 
   derecha = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
   izquierda = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -112,4 +127,20 @@ function generarAsteroides() {
     }
     
   }
+}
+
+function colicionAutoAsteroide(auto, asteroide) {
+  if (asteroide.active) {
+    asteroides.killAndHide(asteroide);
+    asteroide.setActive(false);
+    asteroide.setVisible(false);
+    if (auto.vida > 0) {
+      auto.vida --;  
+    }
+    this.actualizartexto();
+  }
+}
+
+function actualizartexto(){
+  texto.setText('Vida: '+auto.vida)
 }
