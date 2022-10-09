@@ -16,7 +16,10 @@ var config = {
   scene:[{
     preload: preload,
     create: create,
-    update: update
+    update: update,
+    extend: {
+      generarAsteroides: generarAsteroides
+    }
   }]
 }
 
@@ -27,20 +30,40 @@ var derecha;
 var izquierda;
 var arriba;
 var abajo;
+var asteroides;
 
 const velocidadAuto = 500;
+const minAteroides = 2;
+const maxAsteroides = 4;
+const velocidadCaida = 5;
+const tiempoAparicion = 600;
 
 function preload(){
-  const imageUrl = new URL("./assets/sprites/auto.png", import.meta.url);
 
-  //this.load.path = "assets/sprites/";  
-  this.load.image("auto",imageUrl.pathname);
+  const imageUrlAuto = new URL("../public/assets/sprites/auto.png", import.meta.url);
+  const imageUrlAsteroides = new URL("../public/assets/sprites/asteroides.png", import.meta.url);
 
+  this.load.image("auto",imageUrlAuto.pathname);
+  this.load.spritesheet("asteroides",imageUrlAsteroides.pathname,{frameWidth:64,frameHeight:64});
 }
 
 function create(){
   
   auto = this.physics.add.sprite(game.config.width /2, game.config.height - 100, 'auto');
+
+  asteroides = this.physics.add.group({
+    defaultKey:'asteroides',
+    frame:0,
+    maxSice:50
+  });
+
+  this.time.addEvent({
+    delay: tiempoAparicion,
+    loop: true,
+    callback:()=> {
+      this.generarAsteroides()
+    }
+  });
 
   derecha = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
   izquierda = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -49,6 +72,13 @@ function create(){
 }
 
 function update(){
+    Phaser.Actions.IncY(asteroides.getChildren(),velocidadCaida);
+    asteroides.children.iterate(function(asteroide) {
+      if (asteroide.y > 600) {
+        asteroides.killAndHide(asteroide);
+      }
+    });
+
     auto.body.setVelocityX(0);
     auto.body.setVelocityY(0);
 
@@ -63,5 +93,23 @@ function update(){
   }
   else if (abajo.isDown) {
     auto.body.setVelocityY(velocidadAuto);
+  }
+}
+
+function generarAsteroides() {
+  var numeroAsteroides = Phaser.Math.Between(minAteroides,maxAsteroides);
+  for (let i = 0; i < numeroAsteroides; i++) {
+    var asteroide = asteroides.get();
+    
+    if (asteroide) {
+      asteroide.setActive(true).setVisible(true);
+      asteroide.setFrame(Phaser.Math.Between(0,1));
+      asteroide.y = -100;
+      asteroide.x = Phaser.Math.Between(0,game.config.width);
+      this.physics.add.overlap(asteroide, asteroides,(asteroideEnColicion)=> {
+        asteroideEnColicion.x = Phaser.Math.Between(0, game.config.width);
+      });
+    }
+    
   }
 }
