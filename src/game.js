@@ -47,9 +47,11 @@ function preload(){
 
   const imageUrlAuto = new URL("../public/assets/sprites/auto.png", import.meta.url);
   const imageUrlAsteroides = new URL("../public/assets/sprites/asteroides.png", import.meta.url);
+  const imageUrlBala = new URL("../public/assets/sprites/bala.png", import.meta.url);
 
   this.load.image("auto",imageUrlAuto.pathname);
   this.load.spritesheet("asteroides",imageUrlAsteroides.pathname,{frameWidth:64,frameHeight:64});
+  this.load.image("bala",imageUrlBala.pathname);
 }
 
 function create(){
